@@ -84,7 +84,7 @@ def get_habit_tracker(db, name):
             name=habit_data[1],
             description=habit_data[2],
             periodicity=habit_data[3],
-            id=habit_data[0]
+            habit_id=habit_data[0]  # Correct parameter name
         )
     else:
         return None
