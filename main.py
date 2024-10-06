@@ -85,24 +85,32 @@ def analyze_habits(db):
         print("Currently tracked habits:")
         for habit in habits:
             print(habit)
-
     elif analysis_choice == "List habits by periodicity":
-        periodicity = questionary.select("Select the periodicity", choices=["Daily", "Weekly"]).ask()
+        periodicity = questionary.select(
+            "Which periodicity are you interested in?", choices=["Daily", "Weekly"]).ask()
         habits = fetch_habits_by_periodicity(db, periodicity)
-        print(f"Tracked habits with {periodicity} periodicity:")
+        print(f"Habits with '{periodicity}' periodicity:")
         for habit in habits:
             print(habit)
-
     elif analysis_choice == "Longest streak of all habits":
-        streak = compute_longest_streak_overall(db)
-        print(f"The longest streak of all habits is {streak}.")
+        longest_streak = 0
+        habit_with_longest_streak = ""
+        habits = fetch_all_habit_names(db)
 
+        for habit in habits:
+            habit_streak = compute_longest_streak(db, habit)
+            if habit_streak > longest_streak:
+                longest_streak = habit_streak
+                habit_with_longest_streak = habit
+
+        print(f"The longest streak of all habits is {longest_streak} for habit '{habit_with_longest_streak}'.")
     elif analysis_choice == "Longest streak for a habit":
         habits = fetch_all_habit_names(db)
         name = questionary.select("Select the habit", choices=habits + ["Exit"]).ask()
         if name != "Exit":
             streak = compute_longest_streak(db, name)
             print(f"The longest streak for habit '{name}' is {streak}.")
+
 
 def delete_habit(db):
     """Guides the user through deleting a habit."""
