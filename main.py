@@ -45,10 +45,18 @@ def create_habit(db):
         print("This habit already exists.")
     else:
         desc = questionary.text("How do you wanna describe your habit?").ask()
-        per = questionary.select("Is this a Daily or a Weekly habit?", choices=["Daily", "Weekly"]).ask()
+        while True:
+            per = questionary.select("Is this a Daily or a Weekly habit?", choices=["Daily", "Weekly"]).ask()
+            if per in ["Daily", "Weekly"]:  # Input validation
+                break
+            else:
+                print("Invalid periodicity. Please select 'Daily' or 'Weekly'.")
         tracker = HabitTracker(name, desc, per)
-        tracker.save_to_database(db)
-        print(f"Habit '{name}' created!")
+        try:
+            tracker.save_to_database(db)
+            print(f"Habit '{name}' created!")
+        except Exception as e:
+            print(f"An error occurred while creating the habit: {e}")
 
 def increment_habit(db):
     """Guides the user through incrementing a habit's counter."""
