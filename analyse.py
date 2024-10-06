@@ -24,9 +24,10 @@ def compute_longest_streak(db, habit_name):
     completion_dates = cursor.fetchall()
 
     if not completion_dates:
-        return 0  # No completions recorded for this habit
+        return 0
 
-    dates = [datetime.strptime(date[0], "%Y-%m-%d %H:%M:%S") for date in completion_dates]
+    # Ensure the dates are sorted chronologically
+    dates = sorted([datetime.strptime(date[0], "%Y-%m-%d %H:%M:%S") for date in completion_dates])
 
     max_streak = 1
     current_streak = 1
@@ -38,7 +39,7 @@ def compute_longest_streak(db, habit_name):
             max_streak = max(max_streak, current_streak)
             current_streak = 1
 
-    return max(max_streak, current_streak)  # Consider the final streak
+    return max(max_streak, current_streak)
 
 def compute_longest_streak_overall(db):
     """
