@@ -30,6 +30,8 @@ def compute_longest_streak(db, habit_name):
         # Ensure the dates are sorted chronologically
         dates = sorted([datetime.strptime(date[0], "%Y-%m-%d %H:%M:%S") for date in completion_dates])
 
+        print(f"Dates for {habit_name}: {dates}")  # Print the fetched dates
+
         max_streak = 1
         current_streak = 1
         prev_date = dates[0]  # Initialize prev_date
@@ -37,6 +39,7 @@ def compute_longest_streak(db, habit_name):
         for date in dates[1:]:  # Iterate from the second date
             # Calculate the difference in days, considering potential time differences
             diff = (date - prev_date).days
+            print(f"Comparing {date} and {prev_date} (diff: {diff} days)")
             if diff == 1:
                 current_streak += 1
             elif diff > 1:  # Reset streak if the gap is more than one day
