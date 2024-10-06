@@ -64,27 +64,22 @@ def fetch_habits_by_periodicity(db, periodicity):
     cursor.execute('SELECT name FROM habits WHERE periodicity = ?', (periodicity,))
     return [row[0] for row in cursor.fetchall()]
 
-def get_habit_tracker(db, name):
+def get_habit_tracker(db, habit_name):
     """
-    Retrieves a HabitTracker object for the given habit name.
+    Fetches a habit tracker from the database based on its name.
 
     Args:
-        db: The database connection object.
-        name: The name of the habit to retrieve.
+        db: The database connection.
+        habit_name: The name of the habit.
 
     Returns:
-        HabitTracker or None: The HabitTracker object if found, otherwise None.
+        HabitTracker: The habit tracker if found, otherwise None.
     """
     cursor = db.cursor()
-    cursor.execute('SELECT * FROM habits WHERE name = ?', (name,))
+    cursor.execute('SELECT * FROM habits WHERE name = ?', (habit_name,))  # Parameterized query
     habit_data = cursor.fetchone()
-
     if habit_data:
-        return HabitTracker(
-            name=habit_data[1],
-            description=habit_data[2],
-            periodicity=habit_data[3],
-            habit_id=habit_data[0]  # Correct parameter name
-        )
-    else:
-        return None
+        return HabitTracker(*habit_data[1:])  # Create a HabitTracker instance
+    return None
+
+# ... other functions in db.py ...
