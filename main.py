@@ -1,7 +1,9 @@
 import questionary
-from db import initialize_database, fetch_habits_by_periodicity, fetch_all_habit_names, get_habit_tracker
+
+from analyse import compute_longest_streak
 from counter import HabitTracker
-from analyse import compute_longest_streak_overall, compute_longest_streak
+from db import initialize_database, fetch_habits_by_periodicity, fetch_all_habit_names, get_habit_tracker
+
 
 def cli():
     """Main function for the command-line interface."""
