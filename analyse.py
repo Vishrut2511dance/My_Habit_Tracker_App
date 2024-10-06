@@ -1,5 +1,6 @@
-from db import fetch_all_habit_names
-from datetime import datetime
+from datetime import datetime, timedelta
+
+# ... other imports ...
 
 def compute_longest_streak(db, habit_name):
     """
@@ -29,33 +30,20 @@ def compute_longest_streak(db, habit_name):
     # Ensure the dates are sorted chronologically
     dates = sorted([datetime.strptime(date[0], "%Y-%m-%d %H:%M:%S") for date in completion_dates])
 
+    print(f"Dates for {habit_name}: {dates}")  # Print the fetched dates
+
     max_streak = 1
     current_streak = 1
 
     for i in range(1, len(dates)):
+        # For debugging, print the dates being compared
+        print(f"Comparing {dates[i]} and {dates[i - 1]}")
         if (dates[i] - dates[i - 1]).days == 1:
             current_streak += 1
+            print(f"Current streak: {current_streak}")
         else:
+            print("Streak broken!")
             max_streak = max(max_streak, current_streak)
             current_streak = 1
 
     return max(max_streak, current_streak)
-
-def compute_longest_streak_overall(db):
-    """
-    Calculates the longest streak across all habits in the database.
-
-    Args:
-        db: The database connection.
-
-    Returns:
-        int: The length of the longest streak among all habits.
-    """
-    all_habits = fetch_all_habit_names(db)
-    longest = 0
-
-    for habit in all_habits:
-        habit_streak = compute_longest_streak(db, habit)
-        longest = max(longest, habit_streak)
-
-    return longest
