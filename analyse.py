@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # ... other imports ...
 
@@ -30,19 +30,20 @@ def compute_longest_streak(db, habit_name):
     # Ensure the dates are sorted chronologically
     dates = sorted([datetime.strptime(date[0], "%Y-%m-%d %H:%M:%S") for date in completion_dates])
 
-    print(f"Dates for {habit_name}: {dates}")  # Print the fetched dates
+    # Print the fetched dates (optional - can be commented out)
+    # print(f"Dates for {habit_name}: {dates}")
 
     max_streak = 1
     current_streak = 1
 
     for i in range(1, len(dates)):
-        # For debugging, print the dates being compared
-        print(f"Comparing {dates[i]} and {dates[i - 1]}")
+        # For debugging, print the dates being compared (optional - can be commented out)
+        # print(f"Comparing {dates[i]} and {dates[i - 1]}")
         if (dates[i] - dates[i - 1]).days == 1:
             current_streak += 1
-            print(f"Current streak: {current_streak}")
+            # print(f"Current streak: {current_streak}")  # Optional - can be commented out
         else:
-            print("Streak broken!")
+            # print("Streak broken!")  # Remove or comment out this line
             max_streak = max(max_streak, current_streak)
             current_streak = 1
 
