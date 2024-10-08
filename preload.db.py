@@ -1,16 +1,29 @@
 from datetime import datetime
-
 from counter import HabitTracker
 from db import initialize_database
 
-def preload_db(db):  # Add db as an argument
+def preload_database(db):
     """
     Preloads the database with predefined habits and their respective increment dates.
     """
     cursor = db.cursor()
 
-    # ... (rest of your table creation code) ...
+    # Create tables if they do not exist
+    cursor.execute('''CREATE TABLE IF NOT EXISTS habits (
+                           id INTEGER PRIMARY KEY,
+                           name TEXT UNIQUE NOT NULL,
+                           description TEXT,
+                           periodicity TEXT NOT NULL,
+                           creation_date TEXT
+                       )''')
 
+    cursor.execute('''CREATE TABLE IF NOT EXISTS counters (
+                           id INTEGER PRIMARY KEY,
+                           habit_id INTEGER,
+                           increment_date TEXT,
+                           FOREIGN KEY (habit_id) REFERENCES habits (id)
+                       )''')
+    db.commit()
     # Updated dates for October 2024
     habits = {
         "study": [
@@ -38,15 +51,25 @@ def preload_db(db):  # Add db as an argument
         # ... (rest of your habits data) ...
     }
 
-    for habit_name, dates in habits.items():
-        habit = HabitTracker(name=habit_name, description=f"{habit_name} habit", periodicity="Daily" if habit_name != "laundry" else "Weekly")
-        habit.save_to_database(db)
+    for habit_name, dates in habits.items():  # Changed habit_id to habit_name
+        cursor.execute('SELECT id FROM habits WHERE name = ?', (habit_name,))  # Use habit_name here
+        habit_id = cursor.fetchone()
+        if not habit_id:
+            habit = HabitTracker(habit_name, f"{habit_name} habit",
+                                 "Daily" if habit_name != "laundry" else "Weekly")  # Use habit_name here
+            habit.save_to_database(db)  # Changed habit.store(db) to habit.save_to_database(db)
+            cursor.execute('SELECT id FROM habits WHERE name = ?', (habit_name,))  # Use habit_name here
+            habit_id = cursor.fetchone()[0]
+        else:
+            habit_id = habit_id[0]
 
-        for date_str in dates:
-            progress_date = datetime.strptime(date_str, "%Y-%m-%d")
-            habit.log_progress(db, progress_date)  # Pass progress_date to log_progress
+        for date in dates:
+            current_time = datetime.strptime(date, "%Y-%m-%d")
+            cursor.execute('''INSERT INTO counters (habit_id, increment_date)
+                                      VALUES (?, ?)''', (habit_id, current_time.strftime("%Y-%m-%d %H:%M:%S")))
+            db.commit()
 
-if __name__ == "__main__":
-    db = initialize_database()
-    preload_db(db)  # Pass the database connection to the function
-    print("Sample data loaded successfully!")
+    if __name__ == "__main__":
+        db = initialize_database()
+        preload_database(db)
+        print("Sample data loaded successfully!")
